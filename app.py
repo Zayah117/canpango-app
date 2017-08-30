@@ -28,8 +28,14 @@ class Beers(Resource):
 		beers = session.query(Beer).all()
 		return jsonify(Beers=[i.serialize for i in beers])
 
+class SingleBeer(Resource):
+        def get(self, beer_id):
+		beer = session.query(Beer).get(beer_id)
+		return jsonify(Beer=beer.serialize)
+
 api.add_resource(HelloWorld, '/')
 api.add_resource(Beers, '/beers')
+api.add_resource(SingleBeer, '/beer/<string:beer_id>')
 
 if __name__ == '__main__':
 	app.run(debug=True)
