@@ -33,3 +33,7 @@ class Review(Base):
 	appearance = Column(Integer, nullable=False)
 	taste = Column(Integer, nullable=False)
 	overall = Column(Integer, nullable=False)
+
+engine = create_engine('sqlite:///data.db')
+
+Base.metadata.create_all(engine)

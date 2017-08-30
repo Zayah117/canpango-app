@@ -8,7 +8,7 @@ engine = create_engine('sqlite:///data.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
-session = DBSession
+session = DBSession()
 
 beer = Beer(name="Beer1", ibu=60, calories=120, abv=4.5, style="Style1", brewery_location="Location1")
 session.add(beer)
