@@ -25,6 +25,18 @@ class Beer(Base):
 	style = Column(String(80), nullable=False)
 	brewery_location = Column(String(80), nullable=False)
 
+	@property
+	def serialize(self):
+		return {
+			'id': self.id,
+			'name': self.name,
+			'IBU': self.ibu,
+			'calories': self.calories,
+			'ABV': self.abv,
+			'style': self.style,
+			'brewery_location': self.brewery_location
+		}
+
 class Review(Base):
 	__tablename__ = 'review'
 
