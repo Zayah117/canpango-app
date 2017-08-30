@@ -2,12 +2,11 @@ import requests
 from functools import wraps
 
 from flask import Flask
-from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask import request, jsonify
 # from flask import session as session_info
 from flask_restful import Resource, Api
-from sqlalchemy import create_engine, desc
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from json import dumps
 
 from database_setup import Base, User, Beer, Review
