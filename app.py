@@ -1,4 +1,7 @@
 import requests
+import random
+import string
+import hashlib
 from functools import wraps
 
 from flask import Flask
@@ -46,37 +49,57 @@ def valid_pw(name, password, my_hash):
     return my_hash == make_pw_hash(name, password, salt)
 
 
+class Users(Resource):
+    def get(self):
+        users = session.query(User).all()
+        return jsonify(Users=[i.serialize for i in users])
+
+    def put(self):
+        # put('http://localhost:5000/users', data={'name': 'zayah', 'password': 'cats'}).json()
+
+        username = request.form['name']
+        password_hash = make_pw_hash(username, request.form['password'])
+
+        new_user = User(name=username, password_hash=password_hash)
+        session.add(new_user)
+        session.commit()
+
+        users = session.query(User).all()
+        return jsonify(Users=[i.serialize for i in users])
+
+
 class Beers(Resource):
-	def get(self):
-		beers = session.query(Beer).all()
-		return jsonify(Beers=[i.serialize for i in beers])
+    def get(self):
+        beers = session.query(Beer).all()
+        return jsonify(Beers=[i.serialize for i in beers])
 
-	def put(self):
-		# put('http://localhost:5000/beers', data={'name': 'beer name', 'ibu': 60, 'calories': 120, 'abv': 4.5, 'style': 'good beer', 'brewery_location': 'Somewhere - IN'}).json()
+    def put(self):
+        # put('http://localhost:5000/beers', data={'name': 'beer name', 'ibu': 60, 'calories': 120, 'abv': 4.5, 'style': 'good beer', 'brewery_location': 'Somewhere - IN'}).json()
 
-		new_beer = Beer(name=request.form['name'],
-				ibu=request.form['ibu'],
-				calories=request.form['calories'],
-				abv=request.form['abv'],
-				style=request.form['style'],
-				brewery_location=request.form['brewery_location'])
+        new_beer = Beer(name=request.form['name'],
+                ibu=request.form['ibu'],
+                calories=request.form['calories'],
+                abv=request.form['abv'],
+                style=request.form['style'],
+                brewery_location=request.form['brewery_location'])
 
-		session.add(new_beer)
-		session.commit()
+        session.add(new_beer)
+        session.commit()
 
-		beers = session.query(Beer).all()
-		return jsonify(Beers=[i.serialize for i in beers])
+        beers = session.query(Beer).all()
+        return jsonify(Beers=[i.serialize for i in beers])
 
 
 class SpecificBeer(Resource):
-        def get(self, beer_id):
-		beer = session.query(Beer).get(beer_id)
-		return jsonify(Beer=beer.serialize)
+    def get(self, beer_id):
+        beer = session.query(Beer).get(beer_id)
+        return jsonify(Beer=beer.serialize)
 
 
+api.add_resource(Users, '/users')
 api.add_resource(Beers, '/beers')
 api.add_resource(SpecificBeer, '/beer/<string:beer_id>')
 
 
 if __name__ == '__main__':
-	app.run(debug=True)
+    app.run(debug=True)
