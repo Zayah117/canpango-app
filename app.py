@@ -19,6 +19,33 @@ session = DBSession()
 app = Flask(__name__)
 api = Api(app)
 
+
+# User stuff
+def make_salt():
+    """
+    Return and string of random
+    letters to use as salt.
+    """
+    return ''.join(random.choice(string.letters) for x in xrange(5))
+
+
+def make_pw_hash(name, password, salt=None):
+    """
+    Make password hash with
+    username, password, and salt.
+    """
+    if not salt:
+        salt = make_salt()
+    my_hash = hashlib.sha256(name + password + salt).hexdigest()
+    return salt + ',' + my_hash
+
+
+def valid_pw(name, password, my_hash):
+    """Return true if password is valid"""
+    salt = my_hash.split(',')[0]
+    return my_hash == make_pw_hash(name, password, salt)
+
+
 class HelloWorld(Resource):
 	def get(self):
 		return {'hello': 'world'}
