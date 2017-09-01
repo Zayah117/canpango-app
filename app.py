@@ -56,6 +56,7 @@ class Users(Resource):
 
     def put(self):
         # put('http://localhost:5000/users', data={'name': 'zayah', 'password': 'cats'}).json()
+        # curl -X PUT http://localhost:5000/users -d "name='zayah', password='cats'"
 
         username = request.form['name']
         password_hash = make_pw_hash(username, request.form['password'])
@@ -96,9 +97,34 @@ class SpecificBeer(Resource):
         return jsonify(Beer=beer.serialize)
 
 
+class Reviews(Resource):
+    def get(self, beer_id):
+        reviews = session.query(Review).filter(Review.beer_id == beer_id).all()
+        return jsonify(Reviews=[i.serialize for i in reviews])
+
+    def put(self, beer_id):
+        aroma = int(request.form['aroma'])
+        appearance = int(request.form['appearance'])
+        taste = int(request.form['taste'])
+        overall = aroma + appearance + taste
+
+        new_review = Review(aroma=aroma,
+                            appearance=appearance,
+                            taste=taste,
+                            overall=overall,
+                            beer_id=beer_id)
+
+        session.add(new_review)
+        session.commit()
+
+        reviews = session.query(Review).filter(Review.beer_id == beer_id).all()
+        return jsonify(Reviews=[i.serialize for i in reviews])       
+
+
 api.add_resource(Users, '/users')
 api.add_resource(Beers, '/beers')
 api.add_resource(SpecificBeer, '/beer/<string:beer_id>')
+api.add_resource(Reviews, '/reviews/<string:beer_id>')
 
 
 if __name__ == '__main__':

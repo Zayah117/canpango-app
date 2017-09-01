@@ -1,5 +1,5 @@
 import sys
-from sqlalchemy import Column, Integer, Float, String
+from sqlalchemy import Column, Integer, Float, String, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
@@ -25,7 +25,7 @@ class User(Base):
 
 
 class Beer(Base):
-    __tablename__ = 'bear'
+    __tablename__ = 'beer'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -56,6 +56,18 @@ class Review(Base):
     appearance = Column(Integer, nullable=False)
     taste = Column(Integer, nullable=False)
     overall = Column(Integer, nullable=False)
+    beer = relationship(Beer)
+    beer_id = Column(Integer, ForeignKey('beer.id'))
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'aroma': self.aroma,
+            'appearance': self.appearance,
+            'taste': self.taste,
+            'overall': self.overall
+        }
 
 
 engine = create_engine('sqlite:///data.db')
