@@ -49,9 +49,20 @@ def valid_pw(name, password, my_hash):
     return my_hash == make_pw_hash(name, password, salt)
 
 
+def get_user(username, password):
+    user = session.query(User).filter(User.name == username).one()
+    if user:
+        salt = user.password_hash.split(',')[0]
+        password_hash = make_pw_hash(username, password, salt)
+
+        if user.password_hash == password_hash:
+            return user
+
+
 class Users(Resource):
     def get(self):
         # curl -X GET http://localhost:5000/users
+
         users = session.query(User).all()
         return jsonify(Users=[i.serialize for i in users])
 
@@ -78,19 +89,28 @@ class Beers(Resource):
 
     def put(self):
         # curl -X PUT http://localhost:5000/beers -d "name='Awesome Beer'&ibu=60&calories=120&abv=4.5&style='Good Style'&brewery_location='Somewhere WI'"
+        
+        username = request.form['username']
+        password = request.form['password']
 
-        new_beer = Beer(name=request.form['name'],
-                ibu=request.form['ibu'],
-                calories=request.form['calories'],
-                abv=request.form['abv'],
-                style=request.form['style'],
-                brewery_location=request.form['brewery_location'])
+        user = get_user(username, password)
 
-        session.add(new_beer)
-        session.commit()
+        if user:
+            new_beer = Beer(name=request.form['name'],
+                            ibu=request.form['ibu'],
+                            calories=request.form['calories'],
+                            abv=request.form['abv'],
+                            style=request.form['style'],
+                            brewery_location=request.form['brewery_location'],
+                            user_id=user.id)
 
-        beers = session.query(Beer).all()
-        return jsonify(Beers=[i.serialize for i in beers])
+            session.add(new_beer)
+            session.commit()
+
+            beers = session.query(Beer).all()
+            return jsonify(Beers=[i.serialize for i in beers])
+        else:
+            return "User login error."
 
 
 class SpecificBeer(Resource):
@@ -109,24 +129,33 @@ class Reviews(Resource):
         return jsonify(Reviews=[i.serialize for i in reviews])
 
     def put(self, beer_id):
-
         # curl -X PUT http://localhost:5000/reviews/1 -d "aroma=5&appearance=5&taste=7"
-        aroma = int(request.form['aroma'])
-        appearance = int(request.form['appearance'])
-        taste = int(request.form['taste'])
-        overall = aroma + appearance + taste
 
-        new_review = Review(aroma=aroma,
-                            appearance=appearance,
-                            taste=taste,
-                            overall=overall,
-                            beer_id=beer_id)
+        username = request.form['username']
+        password = request.form['password']
 
-        session.add(new_review)
-        session.commit()
+        user = get_user(username, password)
 
-        reviews = session.query(Review).filter(Review.beer_id == beer_id).all()
-        return jsonify(Reviews=[i.serialize for i in reviews])       
+        if user:
+            aroma = int(request.form['aroma'])
+            appearance = int(request.form['appearance'])
+            taste = int(request.form['taste'])
+            overall = aroma + appearance + taste
+
+            new_review = Review(aroma=aroma,
+                                appearance=appearance,
+                                taste=taste,
+                                overall=overall,
+                                beer_id=beer_id,
+                                user_id=user.id)
+
+            session.add(new_review)
+            session.commit()
+
+            reviews = session.query(Review).filter(Review.beer_id == beer_id).all()
+            return jsonify(Reviews=[i.serialize for i in reviews])
+        else:
+            return "User login error."
 
 
 api.add_resource(Users, '/users')

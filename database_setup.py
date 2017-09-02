@@ -34,6 +34,8 @@ class Beer(Base):
     abv = Column(Float, nullable=False)
     style = Column(String(80), nullable=False)
     brewery_location = Column(String(80), nullable=False)
+    user = relationship(User)
+    user_id = Column(Integer, ForeignKey('user.id'))
 
     @property
     def serialize(self):
@@ -44,7 +46,8 @@ class Beer(Base):
             'calories': self.calories,
             'ABV': self.abv,
             'style': self.style,
-            'brewery_location': self.brewery_location
+            'brewery_location': self.brewery_location,
+            'user': self.user.name
         }
 
 
@@ -58,6 +61,8 @@ class Review(Base):
     overall = Column(Integer, nullable=False)
     beer = relationship(Beer)
     beer_id = Column(Integer, ForeignKey('beer.id'))
+    user = relationship(User)
+    user_id = Column(Integer, ForeignKey('user.id'))
 
     @property
     def serialize(self):
@@ -66,7 +71,8 @@ class Review(Base):
             'aroma': self.aroma,
             'appearance': self.appearance,
             'taste': self.taste,
-            'overall': self.overall
+            'overall': self.overall,
+            'user': self.user.name
         }
 
 
