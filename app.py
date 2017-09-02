@@ -51,12 +51,12 @@ def valid_pw(name, password, my_hash):
 
 class Users(Resource):
     def get(self):
+        # curl -X GET http://localhost:5000/users
         users = session.query(User).all()
         return jsonify(Users=[i.serialize for i in users])
 
     def put(self):
-        # put('http://localhost:5000/users', data={'name': 'zayah', 'password': 'cats'}).json()
-        # curl -X PUT http://localhost:5000/users -d "name='zayah', password='cats'"
+        # curl -X PUT http://localhost:5000/users -d "name='zayah'&password='cats'"
 
         username = request.form['name']
         password_hash = make_pw_hash(username, request.form['password'])
@@ -71,11 +71,13 @@ class Users(Resource):
 
 class Beers(Resource):
     def get(self):
+        # curl -X GET http://localhost:5000/beers
+
         beers = session.query(Beer).all()
         return jsonify(Beers=[i.serialize for i in beers])
 
     def put(self):
-        # put('http://localhost:5000/beers', data={'name': 'beer name', 'ibu': 60, 'calories': 120, 'abv': 4.5, 'style': 'good beer', 'brewery_location': 'Somewhere - IN'}).json()
+        # curl -X PUT http://localhost:5000/beers -d "name='Awesome Beer'&ibu=60&calories=120&abv=4.5&style='Good Style'&brewery_location='Somewhere WI'"
 
         new_beer = Beer(name=request.form['name'],
                 ibu=request.form['ibu'],
@@ -92,6 +94,8 @@ class Beers(Resource):
 
 
 class SpecificBeer(Resource):
+    # curl -X GET http://localhost:5000/beer/1
+
     def get(self, beer_id):
         beer = session.query(Beer).get(beer_id)
         return jsonify(Beer=beer.serialize)
@@ -99,10 +103,14 @@ class SpecificBeer(Resource):
 
 class Reviews(Resource):
     def get(self, beer_id):
+        # curl -X GET http://localhost:5000/reviews/1
+
         reviews = session.query(Review).filter(Review.beer_id == beer_id).all()
         return jsonify(Reviews=[i.serialize for i in reviews])
 
     def put(self, beer_id):
+
+        # curl -X PUT http://localhost:5000/reviews/1 -d "aroma=5&appearance=5&taste=7"
         aroma = int(request.form['aroma'])
         appearance = int(request.form['appearance'])
         taste = int(request.form['taste'])
