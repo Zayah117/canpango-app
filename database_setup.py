@@ -14,13 +14,15 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
     password_hash = Column(String(250), nullable=False)
+    last_post_time = Column(Float)
 
     @property
     def serialize(self):
         return {
             'id': self.id,
             'name': self.name,
-            'password_hash': self.password_hash
+            'password_hash': self.password_hash,
+            'last_post_time': self.last_post_time
         }
 
 

@@ -72,7 +72,7 @@ class Users(Resource):
         username = request.form['name']
         password_hash = make_pw_hash(username, request.form['password'])
 
-        new_user = User(name=username, password_hash=password_hash)
+        new_user = User(name=username, password_hash=password_hash, last_post_time=0.0)
         session.add(new_user)
         session.commit()
 
