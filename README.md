@@ -2,7 +2,9 @@
 
 #### Install
 - Clone with github: `$ git clone https://github.com/Zayah117/canpango-app.git`
+
 *OR*
+
 - Download and unzip files
 
 #### Setup
@@ -43,7 +45,8 @@
 	App will run at localhost on port 5000: `http://127.0.0.1:5000/`
 
 3. Using curl to interact with the API
-	**/users**
+	**Users**
+
 	Add a user: 
 	```
 	$ curl -X PUT http://localhost:5000/users -d "name=USERNAME&password=PASSWORD"
@@ -53,7 +56,8 @@
 	$ curl -X GET http://localhost:5000/users
 	```
 
-	**/beers**
+	**Beers**
+
 	Add a beer:
 	```
 	$ curl -X PUT http://localhost:5000/beers -d "name=NAME&ibu=0&calories=0&abv=0.0&style=STYLE&brewery_location=LOCATION&username=USERNAME&password=PASSWORD"
@@ -67,7 +71,8 @@
 	$ curl -X GET http://localhost:5000/beer/1
 	```
 
-	**/reviews**
+	**Reviews**
+
 	Add a review to a specific beer:
 	```
 	$ curl -X PUT http://localhost:5000/reviews/1 -d "aroma=0&appearance=0&taste=0&username=USERNAME&password=PASSWORD"
@@ -79,10 +84,17 @@
 
 4. Viewing API data in your browser
 	Beers:
+
 	`http://localhost:5000/beers`
+	
 	Specific Beer:
+	
 	`http://localhost:5000/beer/1`
+	
 	Users:
+	
 	`http://localhost:5000/users`
+	
 	Reviews for a beer:
+	
 	`http://localhost:5000/reviews/1`
