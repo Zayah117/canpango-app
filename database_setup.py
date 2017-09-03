@@ -49,7 +49,7 @@ class Beer(Base):
             'ABV': self.abv,
             'style': self.style,
             'brewery_location': self.brewery_location,
-            'user': self.user
+            'user': self.user.name
         }
 
 
@@ -74,7 +74,7 @@ class Review(Base):
             'appearance': self.appearance,
             'taste': self.taste,
             'overall': self.overall,
-            'user': self.user
+            'user': self.user.name
         }
 
 

@@ -2,6 +2,7 @@ import requests
 import random
 import string
 import hashlib
+import time
 from functools import wraps
 
 from flask import Flask
@@ -59,6 +60,14 @@ def get_user(username, password):
             return user
 
 
+def user_can_post(user):
+    day = 60 * 60 * 24
+    if (time.time() - user.last_post_time) > day:
+        return True
+    else:
+        return False
+
+
 class Users(Resource):
     def get(self):
         # curl -X GET http://localhost:5000/users
@@ -88,7 +97,7 @@ class Beers(Resource):
         return jsonify(Beers=[i.serialize for i in beers])
 
     def put(self):
-        # curl -X PUT http://localhost:5000/beers -d "name='Awesome Beer'&ibu=60&calories=120&abv=4.5&style='Good Style'&brewery_location='Somewhere WI'"
+        # curl -X PUT http://localhost:5000/beers -d "name=AwesomeBeer&ibu=60&calories=120&abv=4.5&style=GoodStyle&brewery_location=Somewhere-WI"
         
         username = request.form['username']
         password = request.form['password']
@@ -96,19 +105,26 @@ class Beers(Resource):
         user = get_user(username, password)
 
         if user:
-            new_beer = Beer(name=request.form['name'],
-                            ibu=request.form['ibu'],
-                            calories=request.form['calories'],
-                            abv=request.form['abv'],
-                            style=request.form['style'],
-                            brewery_location=request.form['brewery_location'],
-                            user_id=user.id)
+            if user_can_post(user):
+                new_beer = Beer(name=request.form['name'],
+                                ibu=request.form['ibu'],
+                                calories=request.form['calories'],
+                                abv=request.form['abv'],
+                                style=request.form['style'],
+                                brewery_location=request.form['brewery_location'],
+                                user_id=user.id)
 
-            session.add(new_beer)
-            session.commit()
+                user.last_post_time = time.time()
 
-            beers = session.query(Beer).all()
-            return jsonify(Beers=[i.serialize for i in beers])
+                session.add(new_beer)
+                session.add(user)
+
+                session.commit()
+
+                beers = session.query(Beer).all()
+                return jsonify(Beers=[i.serialize for i in beers])
+            else:
+                return "User has already created 1 beer today"
         else:
             return "User login error."
 
