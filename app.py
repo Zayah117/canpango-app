@@ -88,6 +88,11 @@ def user_can_post(user):
         return False
 
 
+# Helper function for clamping numbers - https://stackoverflow.com/a/5996949/5133239
+def clamp(n, minn, maxn):
+    return max(min(maxn, n), minn)
+
+
 class Users(Resource):
     def get(self):
         # curl -X GET http://localhost:5000/users
@@ -185,9 +190,9 @@ class Reviews(Resource):
         user = get_user(username, password)
 
         if user:
-            aroma = int(request.form['aroma'])
-            appearance = int(request.form['appearance'])
-            taste = int(request.form['taste'])
+            aroma = clamp(int(request.form['aroma']), 1, 5)
+            appearance = clamp(int(request.form['appearance']), 1, 5)
+            taste = clamp(int(request.form['taste']), 1, 10)
             overall = aroma + appearance + taste
 
             new_review = Review(aroma=aroma,
