@@ -3,14 +3,15 @@ import random
 import string
 import hashlib
 import time
+import re
 from functools import wraps
 
 from flask import Flask
 from flask import request, jsonify
-# from flask import session as session_info
 from flask_restful import Resource, Api
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 from json import dumps
 
 from database_setup import Base, User, Beer, Review
@@ -22,6 +23,21 @@ session = DBSession()
 
 app = Flask(__name__)
 api = Api(app)
+
+
+# Validating user inputs
+def re_username(username):
+    """Return true if username is valid"""
+    USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+
+    return USER_RE.match(username)
+
+
+def re_password(password):
+    """Return true if password is valid"""
+    PASS_RE = re.compile(r"^.{3,20}$")
+
+    return PASS_RE.match(password)
 
 
 # User stuff
@@ -51,7 +67,11 @@ def valid_pw(name, password, my_hash):
 
 
 def get_user(username, password):
-    user = session.query(User).filter(User.name == username).one()
+    try:
+        user = session.query(User).filter(User.name == username).one()
+    except NoResultFound:
+        user = None
+
     if user:
         salt = user.password_hash.split(',')[0]
         password_hash = make_pw_hash(username, password, salt)
@@ -76,17 +96,29 @@ class Users(Resource):
         return jsonify(Users=[i.serialize for i in users])
 
     def put(self):
-        # curl -X PUT http://localhost:5000/users -d "name='zayah'&password='cats'"
+        # curl -X PUT http://localhost:5000/users -d "name=zayah&password=cats"
 
         username = request.form['name']
-        password_hash = make_pw_hash(username, request.form['password'])
+        password = request.form['password']
 
-        new_user = User(name=username, password_hash=password_hash, last_post_time=0.0)
-        session.add(new_user)
-        session.commit()
+        if re_username(username) and re_password(password):
+            try:
+                user = session.query(User).filter(User.name == username).one()
+            except NoResultFound:
+                user = None
+            if user:
+                return "User '%s' already exists" % username
+            else:
+                password_hash = make_pw_hash(username, password)
 
-        users = session.query(User).all()
-        return jsonify(Users=[i.serialize for i in users])
+                new_user = User(name=username, password_hash=password_hash, last_post_time=0.0)
+                session.add(new_user)
+                session.commit()
+
+                users = session.query(User).all()
+                return jsonify(Users=[i.serialize for i in users])
+        else:
+            return "Inputs (username or password) are not valid."
 
 
 class Beers(Resource):
@@ -124,7 +156,7 @@ class Beers(Resource):
                 beers = session.query(Beer).all()
                 return jsonify(Beers=[i.serialize for i in beers])
             else:
-                return "User has already created 1 beer today"
+                return "User has already created 1 beer today."
         else:
             return "User login error."
 
