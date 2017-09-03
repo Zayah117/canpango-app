@@ -25,7 +25,7 @@ app = Flask(__name__)
 api = Api(app)
 
 
-# Validating user inputs
+# Validating user inputs with regex
 def re_username(username):
     """Return true if username is valid"""
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -61,7 +61,7 @@ def make_pw_hash(name, password, salt=None):
 
 
 def valid_pw(name, password, my_hash):
-    """Return true if password is valid"""
+    """Return true if password matches"""
     salt = my_hash.split(',')[0]
     return my_hash == make_pw_hash(name, password, salt)
 
@@ -96,7 +96,7 @@ class Users(Resource):
         return jsonify(Users=[i.serialize for i in users])
 
     def put(self):
-        # curl -X PUT http://localhost:5000/users -d "name=zayah&password=cats"
+        # curl -X PUT http://localhost:5000/users -d "name=USERNAME&password=PASSWORD"
 
         username = request.form['name']
         password = request.form['password']
@@ -129,7 +129,7 @@ class Beers(Resource):
         return jsonify(Beers=[i.serialize for i in beers])
 
     def put(self):
-        # curl -X PUT http://localhost:5000/beers -d "name=AwesomeBeer&ibu=60&calories=120&abv=4.5&style=GoodStyle&brewery_location=Somewhere-WI"
+        # curl -X PUT http://localhost:5000/beers -d "name=NAME&ibu=0&calories=0&abv=0.0&style=STYLE&brewery_location=LOCATION&username=USERNAME&password=PASSWORD"
         
         username = request.form['username']
         password = request.form['password']
@@ -177,7 +177,7 @@ class Reviews(Resource):
         return jsonify(Reviews=[i.serialize for i in reviews])
 
     def put(self, beer_id):
-        # curl -X PUT http://localhost:5000/reviews/1 -d "aroma=5&appearance=5&taste=7"
+        # curl -X PUT http://localhost:5000/reviews/1 -d "aroma=0&appearance=0&taste=0&username=USERNAME&password=PASSWORD"
 
         username = request.form['username']
         password = request.form['password']
