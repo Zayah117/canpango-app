@@ -1,14 +1,15 @@
 # Simple Beer API
 
-#### Install
+## Install
 - Clone with github: `$ git clone https://github.com/Zayah117/canpango-app.git`
 
 *OR*
 
 - Download and unzip files
 
-#### Setup
+## Setup
 1. Setup a virtual environment for dependencies
+	
 	```
 	$ virtualenv rest-api
 	$ source rest-api/bin/activate
@@ -20,6 +21,7 @@
 	```
 
 2. Install libraries within virtual environment
+	
 	```
 	$ pip install requests
 	$ pip install flask
@@ -28,6 +30,7 @@
 	```
 
 3. Setup Sqlite database using Python (*Python 2.7.x*)
+	
 	In your app directory, run:
 	```
 	$ python database_setup.py
@@ -35,16 +38,18 @@
 
 	This should create `data.db` in your app directory.
 
-#### Using the app
+## Using the app
 1. `cd` to application directory
 
 2. Run application with Python (*Python 2.7.x*)
+	
 	```
 	$ python app.py
 	```
 	App will run at localhost on port 5000: `http://127.0.0.1:5000/`
 
 3. Using curl to interact with the API
+	
 	**Users**
 
 	Add a user: 
@@ -83,6 +88,7 @@
 	```
 
 4. Viewing API data in your browser
+	
 	Beers:
 
 	`http://localhost:5000/beers`
