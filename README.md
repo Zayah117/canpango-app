@@ -1,7 +1,7 @@
 # Simple Beer API
 
 ## Install
-- Clone with github: `$ git clone https://github.com/Zayah117/canpango-app.git`
+- Clone with github: `$ git clone https://github.com/Zayah117/simple-beer-api.git`
 
 *OR*
 
