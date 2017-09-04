@@ -186,7 +186,10 @@ class SpecificBeer(Resource):
         # curl -X GET http://localhost:5000/beer/1
 
         beer = session.query(Beer).get(beer_id)
-        return jsonify(Beer=beer.serialize)
+        if beer:
+            return jsonify(Beer=beer.serialize)
+        else:
+            return "Beer '%s' not found" % str(beer_id)
 
 
 class Reviews(Resource):
