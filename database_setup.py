@@ -9,6 +9,7 @@ Base = declarative_base()
 
 
 class User(Base):
+    """Class for User objects"""
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -27,6 +28,7 @@ class User(Base):
 
 
 class Beer(Base):
+    """Class for Beer objects"""
     __tablename__ = 'beer'
 
     id = Column(Integer, primary_key=True)
@@ -54,6 +56,7 @@ class Beer(Base):
 
 
 class Review(Base):
+    """Class for Review objects"""
     __tablename__ = 'review'
 
     id = Column(Integer, primary_key=True)
