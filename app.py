@@ -39,7 +39,7 @@ def re_password(password):
     return PASS_RE.match(password)
 
 
-# User stuff
+# User functions
 def make_salt():
     """
     Return and string of random
@@ -66,6 +66,10 @@ def valid_pw(name, password, my_hash):
 
 
 def get_user(username, password):
+    """
+    If user exists and password
+    matches, return user.
+    """
     try:
         user = session.query(User).filter(User.name == username).one()
     except NoResultFound:
@@ -80,8 +84,12 @@ def get_user(username, password):
 
 
 def user_can_post(user):
-    day = 60 * 60 * 24
-    if (time.time() - user.last_post_time) > day:
+    """
+    If time since last post is
+    more than a day, return True
+    """
+    DAY = 60 * 60 * 24
+    if (time.time() - user.last_post_time) > DAY:
         return True
     else:
         return False
@@ -93,6 +101,7 @@ def clamp(n, minn, maxn):
 
 
 class Users(Resource):
+    """Resource for Users"""
     def get(self):
         # curl -X GET http://localhost:5000/users
 
@@ -106,6 +115,7 @@ class Users(Resource):
         password = request.form['password']
 
         if re_username(username) and re_password(password):
+            # See if user already exists before creating
             try:
                 user = session.query(User).filter(User.name == username).one()
             except NoResultFound:
@@ -113,6 +123,7 @@ class Users(Resource):
             if user:
                 return "User '%s' already exists" % username
             else:
+                # Create new user
                 password_hash = make_pw_hash(username, password)
 
                 new_user = User(name=username,
@@ -129,6 +140,7 @@ class Users(Resource):
 
 
 class Beers(Resource):
+    """Resource for Beers"""
     def get(self):
         # curl -X GET http://localhost:5000/beers
 
@@ -169,14 +181,16 @@ class Beers(Resource):
 
 
 class SpecificBeer(Resource):
-    # curl -X GET http://localhost:5000/beer/1
-
+    """Resource for a specific beer"""
     def get(self, beer_id):
+        # curl -X GET http://localhost:5000/beer/1
+
         beer = session.query(Beer).get(beer_id)
         return jsonify(Beer=beer.serialize)
 
 
 class Reviews(Resource):
+    """Resource for Reviews"""
     def get(self, beer_id):
         # curl -X GET http://localhost:5000/reviews/1
 
