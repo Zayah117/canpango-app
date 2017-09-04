@@ -17,7 +17,7 @@ from database_setup import Base, User, Beer, Review
 
 engine = create_engine('sqlite:///data.db')
 Base.metadata.bind = engine
-DBSession = sessionmaker(bind = engine)
+DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 app = Flask(__name__)
@@ -115,7 +115,10 @@ class Users(Resource):
             else:
                 password_hash = make_pw_hash(username, password)
 
-                new_user = User(name=username, password_hash=password_hash, last_post_time=0.0)
+                new_user = User(name=username,
+                                password_hash=password_hash,
+                                last_post_time=0.0)
+
                 session.add(new_user)
                 session.commit()
 
@@ -134,7 +137,7 @@ class Beers(Resource):
 
     def put(self):
         # curl -X PUT http://localhost:5000/beers -d "name=NAME&ibu=0&calories=0&abv=0.0&style=STYLE&brewery_location=LOCATION&username=USERNAME&password=PASSWORD"
-        
+
         username = request.form['username']
         password = request.form['password']
 
