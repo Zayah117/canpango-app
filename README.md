@@ -23,10 +23,7 @@
 2. Install libraries within virtual environment
 	
 	```
-	$ pip install requests
-	$ pip install flask
-	$ pip install flask-restful
-	$ pip install sqlalchemy
+	$ pip install -r requirements.txt
 	```
 
 3. Setup Sqlite database using Python (*Python 2.7.x*)
