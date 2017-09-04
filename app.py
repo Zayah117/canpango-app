@@ -203,6 +203,10 @@ class Reviews(Resource):
     def put(self, beer_id):
         # curl -X PUT http://localhost:5000/reviews/1 -d "aroma=0&appearance=0&taste=0&username=USERNAME&password=PASSWORD"
 
+        beer = session.query(Beer).get(beer_id)
+        if not beer:
+            return "Beer '%s' does not exist" % str(beer_id)
+
         username = request.form['username']
         password = request.form['password']
 
